@@ -47,15 +47,9 @@ class MainActivity : AppCompatActivity() {
                     val gson = Gson()
                     val data = gson.fromJson(responseBody, Data::class.java)
                     val labels = data.detections.labels
-                    if (labels.isNotEmpty()) {
-                        val label = labels[0].label
-                        runOnUiThread {
-                            binding.textView.text = label
-                        }
-                    } else {
-                        runOnUiThread {
-                            Toast.makeText(applicationContext, "No labels found", Toast.LENGTH_SHORT).show()
-                        }
+                    val allLabels = labels.joinToString(", ") { it.label } // Concatenate all labels
+                    runOnUiThread {
+                        binding.textView.text = allLabels
                     }
                 } else {
                     runOnUiThread {
