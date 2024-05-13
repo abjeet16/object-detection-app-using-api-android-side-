@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("http://192.168.29.30:5000/")
+            .url("http://192.168.29.30:5000/?image")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
@@ -42,8 +42,37 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call,response: Response) {
-                binding.textView.setText(response.body?.string() ?: "error" )
+                val responseBody = response.body?.string()
+                if (responseBody != null) {
+                    val gson = Gson()
+                    val data = gson.fromJson(responseBody, Data::class.java)
+                    val labels = data.detections.labels
+                    if (labels.isNotEmpty()) {
+                        val label = labels[0].label
+                        runOnUiThread {
+                            binding.textView.text = label
+                        }
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(applicationContext, "No labels found", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, "Empty response body", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         })
     }
+    data class Data(val detections: Detections)
+    data class Detections(val labels: List<Label>)
+    data class Label(
+        val Height: Int,
+        val Width: Int,
+        val X: Int,
+        val Y: Int,
+        val confidences: Double,
+        val label: String
+    )
 }
