@@ -1,5 +1,6 @@
 package com.example.test
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -29,6 +30,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val intent = intent
+        val id = intent.
+
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("http://192.168.29.30:5000/?image")
@@ -46,7 +50,9 @@ class MainActivity : AppCompatActivity() {
                 if (responseBody != null) {
                     val gson = Gson()
                     val data = gson.fromJson(responseBody, Data::class.java)
+                    //getting all the elements from labels dispensary
                     val labels = data.detections.labels
+                    //adding all labels with a , in between
                     val allLabels = labels.joinToString(", ") { it.label } // Concatenate all labels
                     runOnUiThread {
                         binding.textView.text = allLabels
