@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +16,15 @@ import com.example.test.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http2.Http2Reader
 import org.jetbrains.annotations.NotNull
 import java.io.IOException
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     private  val binding by lazy {
@@ -31,16 +35,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val intent = intent
-        val id = intent.
+        val id = intent.getStringExtra("id").toString()
 
         val client = OkHttpClient()
+        val requestBody = FormBody.Builder()
+            .add("id", id).build()
         val request = Request.Builder()
-            .url("http://192.168.29.30:5000/?image")
+            .url("http://192.168.29.30:5000/det")
+            .post(requestBody)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
+                    binding.progressbar.visibility = View.GONE
                     Toast.makeText(applicationContext, "error", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -55,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                     //adding all labels with a , in between
                     val allLabels = labels.joinToString(", ") { it.label } // Concatenate all labels
                     runOnUiThread {
+                        binding.progressbar.visibility = View.GONE
                         binding.textView.text = allLabels
                     }
                 } else {

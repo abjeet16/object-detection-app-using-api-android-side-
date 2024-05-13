@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ import java.io.ByteArrayOutputStream
 class clickImage : AppCompatActivity() {
     private val REQUEST_IMAGE_CAPTURE = 1
     private val CAMERA_PERMISSION_CODE = 101
+    private lateinit var intent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +76,7 @@ class clickImage : AppCompatActivity() {
     private fun uploadImageToFirebaseStorage(bitmap: Bitmap) {
         val storage = Firebase.storage
         val storageRef = storage.reference
-        val id = System.currentTimeMillis()
+        val id = System.currentTimeMillis().toString()
         val imagesRef = storageRef.child("${id}.jpg")
 
         val baos = ByteArrayOutputStream()
@@ -84,7 +86,7 @@ class clickImage : AppCompatActivity() {
         val uploadTask = imagesRef.putBytes(data)
         uploadTask.addOnSuccessListener {
             Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-            val intent=Intent(this,MainActivity::class.java)
+            intent=Intent(this,MainActivity::class.java)
             intent.putExtra("id",id)
             startActivity(intent)
             finish()
